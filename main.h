@@ -114,8 +114,7 @@ typedef struct {
 bool silentMode;
 TraceValues trace;
 CacheOutput output = {0};
-Set iCache[NUMSETS];
-Set dCache[NUMSETS];
+Set cache[NUMSETS];
 
 /*----------------------------------
          Fucntion prototypes             
@@ -126,6 +125,13 @@ void updateLRU(unsigned int setIndex, int way);
 int getLRU(unsigned int setIndex);
 int findEmpty(unsigned int setIndex);
 int findHit(Derived values);
+
+
+int snoopInvaild(unsigned int address);
+int snoopRead(unsigned int address);
+int snoopWrite(unsigned int address);
+int snoopReadM(unsigned int address);
+
 
 void printOutput();
 void printValid(unsigned int address);

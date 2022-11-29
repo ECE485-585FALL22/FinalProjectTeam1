@@ -1,11 +1,18 @@
 #include "main.h"
 
-/* 
-*  For Checkpoint 2, need to have test plan outline + description of tests
-*  Need to have data structure to represent tag array of cache 
-*  Need to derive index and tag fields from address
-*  Demonstrate functions to implement replacement algorithm
+/*
+* TODO-LIST FOR FINAL PROJECT
+* 
+* read function 
+* write function
+* snoop functions
+* clear all function
+* print all function
+* 
+* 
+* 
 */
+
 
 int main(int argc, char *argv[]) {
     char *filename;
@@ -89,13 +96,13 @@ void read(unsigned int address) {
     if (way != -1) {
         // Hit
         output.cacheHits++;
-        switch (dCache[values.index].lines[way].MESI) {
+        switch (cache[values.index].lines[way].MESI) {
             case 'M':
                 updateLRU(values.index, way);
                 messageToCache(SENDLINE, address);
                 break;
             case 'E':
-                dCache[values.index].lines[way].MESI = 'S';
+                //cache[values.index].lines[way].MESI = 'S';
                 updateLRU(values.index, way);
                 messageToCache(SENDLINE, address);
                 break;
@@ -104,7 +111,7 @@ void read(unsigned int address) {
                 messageToCache(SENDLINE, address);
                 break;
             case 'I':
-                dCache[values.index].lines[way].MESI = 'S';
+                //cache[values.index].lines[way].MESI = 'S';
                 updateLRU(values.index, way);
                 messageToCache(SENDLINE, address);
                 break;
@@ -117,16 +124,16 @@ void read(unsigned int address) {
         way = findEmpty(values.index);
         if (way != -1) {
             // Miss (Empty)
-            dCache[values.index].lines[way].MESI = 'E';
-            dCache[values.index].lines[way].tag = values.tag;
+            cache[values.index].lines[way].MESI = 'E';
+            cache[values.index].lines[way].tag = values.tag;
             updateLRU(values.index, way);
             messageToCache(SENDLINE, address);
         }
         else {
             // Miss (Needs Evict)
             way = getLRU(values.index);
-            dCache[values.index].lines[way].MESI = 'E';
-            dCache[values.index].lines[way].tag = values.tag;
+            cache[values.index].lines[way].MESI = 'E';
+            cache[values.index].lines[way].tag = values.tag;
             updateLRU(values.index, way);
             messageToCache(SENDLINE, address);
         }
@@ -142,8 +149,58 @@ void write(unsigned int address) {
     // if no invalid, evict line and set MESI
 }
 
+int snoopInvaild() {
+    // Parse address
+    // check cache at index for same tag
+    // if hit, invalidate the line
+    // report to L1 to invalidate line
+    // report snoop results to bus
+    // else,
+    // report snoop results to bus
+}
+
+int snoopRead() {
+    // Parse address
+    // check cache at index for same tag
+    // if hit, set mesi bit
+    // I to S
+    // S to to S
+    // E to S 
+    // M to M
+    // updateLRU
+    // else,
+    // report snoop results to bus
+}
+
+int snoopWrite() {
+    // Parse address
+    // check cache at index for same tag
+    // if hit, set mesi bit
+    // I to M 
+    // E to M
+    // S to M
+    // M to M
+    // updateLRU
+    // else,
+    // report snoop results to bus
+}   
+
+int snoopReadM() {
+    // Parse address
+    // check cache at index for same tag
+    // if hit, set mesi bit
+    // I to I
+    // S to I
+    // E to I
+    // M to I, bus write, flush back to main memory
+    // updateLRU
+    // else
+    // report snoop results to bus
+}
+
+
 void updateLRU(unsigned int setIndex, int way) {
-    unsigned int PLRU = dCache[setIndex].PLRU;
+    unsigned int PLRU = cache[setIndex].PLRU;
 
     switch(way) {
         case 0:
@@ -171,12 +228,12 @@ void updateLRU(unsigned int setIndex, int way) {
             PLRU = (PLRU & 0x3A) | 0x45;
             break;
     }
-    dCache[setIndex].PLRU = PLRU;
+    cache[setIndex].PLRU = PLRU;
 }
 
 int getLRU(unsigned int setIndex) {
     int way;
-    unsigned int PLRU = dCache[setIndex].PLRU;
+    unsigned int PLRU = cache[setIndex].PLRU;
 
     if( (PLRU & 0x1) == 0 ) {
         if( ((PLRU >> 2) & 0x1) == 0 ) {
@@ -222,7 +279,7 @@ int findEmpty(unsigned int setIndex) {
     int way;
 
     for (int i = 0; i < NUMWAYS; i++) {
-        if (dCache[setIndex].lines[i].MESI == 'I') {
+        if (cache[setIndex].lines[i].MESI == 'I') {
             return way = i;
         }
     }
@@ -232,7 +289,7 @@ int findEmpty(unsigned int setIndex) {
 int findHit(Derived values) {
     int way;
     for (int i = 0; i < NUMWAYS; i++) {
-        if (dCache[values.index].lines[i].tag == values.tag) {
+        if (cache[values.index].lines[i].tag == values.tag) {
             return way = i;
         }
     }
@@ -250,14 +307,14 @@ void printValid(unsigned int address) {
     values = addressParser(address);
 
     for (int i = 0; i < NUMWAYS; i++) {
-        if (dCache[values.index].lines[i].MESI == 'I') {
+        if (caache[values.index].lines[i].MESI == 'I') {
             continue;
         }
         else {
             printf("\nCache Set   : %d\n",  values.index);
             printf("Line        : %d\n",    i);
-            printf("Tag         : 0x%x\n",  dCache[values.index].lines[i].tag);
-            printf("MESI        : %c\n\n",  dCache[values.index].lines[i].MESI);
+            printf("Tag         : 0x%x\n",  cache[values.index].lines[i].tag);
+            printf("MESI        : %c\n\n",  cache[values.index].lines[i].MESI);
         }
     }
 }
@@ -273,10 +330,8 @@ void printOutput() {
 void resetCache() {
     for (int i = 0; i < NUMSETS; i++) {
         for (int j = 0; j < NUMWAYS; j++) {
-            dCache[i].lines[j].MESI = 'I';
-            dCache[i].lines[j].tag = 0;
-            iCache[i].lines[j].MESI = 'I';
-            iCache[i].lines[j].tag = 0;
+            cache[i].lines[j].MESI = 'I';
+            cache[i].lines[j].tag = 0;
         }
     }
 
@@ -286,6 +341,23 @@ void resetCache() {
     output.cacheReads = 0;
     output.cacheWrites = 0.0;
 
+}
+
+void busOperation(int BusOp, unsigned int Address, int SnoopResult) {
+    SnoopResult = GetSnoopResult(Address);
+    if (!silentMode) {
+        printf("BusOp: %s, Address : %x, Snoop Result : %s\n", busChar[BusOp], Address, snoopChar[SnoopResult]);
+    }
+}
+
+int getSnoopResult(unsigned int Address) {
+    return HIT;
+}
+
+void putSnoopResult(unsigned int Address, int SnoopResult) {
+    if (!silentMode) {
+        printf("SnoopResult: Address %x, SnoopResult : %s\n", Address, snoopChar[SnoopResult]);
+    }
 }
 
 Derived addressParser(unsigned int address) {
