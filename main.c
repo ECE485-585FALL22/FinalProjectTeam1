@@ -149,7 +149,7 @@ void write(unsigned int address) {
     // if no invalid, evict line and set MESI
 }
 
-int snoopInvaild() {
+int snoopInvaild(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, invalidate the line
@@ -159,7 +159,7 @@ int snoopInvaild() {
     // report snoop results to bus
 }
 
-int snoopRead() {
+int snoopRead(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, set mesi bit
@@ -172,7 +172,7 @@ int snoopRead() {
     // report snoop results to bus
 }
 
-int snoopWrite() {
+int snoopWrite(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, set mesi bit
@@ -185,7 +185,7 @@ int snoopWrite() {
     // report snoop results to bus
 }   
 
-int snoopReadM() {
+int snoopReadM(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, set mesi bit
@@ -307,7 +307,7 @@ void printValid(unsigned int address) {
     values = addressParser(address);
 
     for (int i = 0; i < NUMWAYS; i++) {
-        if (caache[values.index].lines[i].MESI == 'I') {
+        if (cache[values.index].lines[i].MESI == 'I') {
             continue;
         }
         else {
