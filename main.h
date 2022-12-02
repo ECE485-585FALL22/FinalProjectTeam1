@@ -8,6 +8,7 @@
 #define BUFFER      100
 #define INDEXMASK   0x00007FFF
 #define TAGMASK     0x000007FF
+#define BYTEMASK    0x00000003
 #define BYTEOFF     6
 #define INDEXOFF    15
 #define NUMWAYS     8
@@ -137,7 +138,9 @@ void printOutput();
 void printValid(unsigned int address);
 void resetCache();
 
-void busOperation(int BusOp, unsigned int Address, int SnoopResult);
+void writeMESI(unsigned int setIndex, int way, int *snoopResult);
+
+void busOperation(int BusOp, unsigned int Address, int *SnoopResult);
 void putSnoopResult(unsigned int Address, int SnoopResult);
 void messageToCache(int Message, unsigned int Address);
 int getSnoopResult(unsigned int Address);
