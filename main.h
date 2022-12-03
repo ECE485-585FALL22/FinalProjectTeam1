@@ -128,10 +128,10 @@ int findEmpty(unsigned int setIndex);
 int findHit(Derived values);
 
 
-int snoopInvaild(unsigned int address);
-int snoopRead(unsigned int address);
-int snoopWrite(unsigned int address);
-int snoopReadM(unsigned int address);
+void snoopInvaild(unsigned int address);
+void snoopRead(unsigned int address);
+void snoopWrite(unsigned int address);
+void snoopReadM(unsigned int address);
 
 
 void printOutput();

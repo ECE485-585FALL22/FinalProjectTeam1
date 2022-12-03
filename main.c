@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
     }
 
     trace = traceParser(filename);
+
     resetCache();
     for(int i = 0; i < trace.size; i++) {
         switch(trace.command[i]) {
@@ -73,10 +74,9 @@ int main(int argc, char *argv[]) {
             default:
                 exit(-1);
         }
-        output.cacheRatio = output.cacheHits / (float)(output.cacheReads + output.cacheWrites);
-        printOutput();
     }
-
+    output.cacheRatio = output.cacheHits / (float)(output.cacheReads + output.cacheWrites);
+    printOutput();
     return 0;
 }
 
@@ -102,12 +102,6 @@ void read(unsigned int address) {
                 messageToCache(SENDLINE, address);
                 break;
             case 'S':
-                updateLRU(values.index, way);
-                messageToCache(SENDLINE, address);
-                break;
-            case 'I':
-                busOperation(READ, address, &snoopResult);
-                writeMESI(values.index, way, &snoopResult);
                 updateLRU(values.index, way);
                 messageToCache(SENDLINE, address);
                 break;
@@ -163,7 +157,6 @@ void read(unsigned int address) {
                     messageToCache(SENDLINE, address);
                     break;
             }
-
         }
     }
 }
@@ -172,7 +165,7 @@ void write(unsigned int address) {
     Derived values;
     int way;
     int snoopResult;
-    output.cacheReads++;
+    output.cacheWrites++;
 
     values = addressParser(address);
     way = findHit(values);
@@ -196,12 +189,6 @@ void write(unsigned int address) {
             updateLRU(values.index, way);
             messageToCache(SENDLINE, address);
             break;
-        case 'I':
-            busOperation(READ, address, &snoopResult);
-            writeMESI(values.index, way, &snoopResult);
-            updateLRU(values.index, way);
-            messageToCache(SENDLINE, address);
-            break;
         default:
             exit(-1);
         }
@@ -211,7 +198,7 @@ void write(unsigned int address) {
         way = findEmpty(values.index);
         if (way != -1) {
             // Miss (Empty)
-            busOperation(READ, address, &snoopResult);
+            busOperation(RWIM, address, &snoopResult);
             messageToCache(GETLINE, address);
             cache[values.index].lines[way].MESI = 'M';
             cache[values.index].lines[way].tag = values.tag;
@@ -259,7 +246,7 @@ void write(unsigned int address) {
     }
 }
 
-int snoopInvaild() {
+void snoopInvaild(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, invalidate the line
@@ -269,7 +256,7 @@ int snoopInvaild() {
     // report snoop results to bus
 }
 
-int snoopRead() {
+void snoopRead(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, set mesi bit
@@ -282,7 +269,7 @@ int snoopRead() {
     // report snoop results to bus
 }
 
-int snoopWrite() {
+void snoopWrite(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, set mesi bit
@@ -295,7 +282,7 @@ int snoopWrite() {
     // report snoop results to bus
 }   
 
-int snoopReadM() {
+void snoopReadM(unsigned int address) {
     // Parse address
     // check cache at index for same tag
     // if hit, set mesi bit
@@ -398,7 +385,7 @@ int findEmpty(unsigned int setIndex) {
 int findHit(Derived values) {
     int way;
     for (int i = 0; i < NUMWAYS; i++) {
-        if (cache[values.index].lines[i].tag == values.tag) {
+        if (cache[values.index].lines[i].tag == values.tag && cache[values.index].lines[i].MESI != 'I') {
             return way = i;
         }
     }
