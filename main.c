@@ -254,6 +254,17 @@ void snoopInvaild(unsigned int address) {
     // report snoop results to bus
     // else,
     // report snoop results to bus
+
+    Derived values = addressParser(address);
+    int way = findHit(values);
+    int snoopResult;
+
+    if (way != -1) {
+        cache[values.index].lines[way].MESI = 'I';
+        messageToCache(INVALIDATELINE, address);
+    }
+
+    busOperation(READ, address, &snoopResult);
 }
 
 void snoopRead(unsigned int address) {
@@ -267,6 +278,20 @@ void snoopRead(unsigned int address) {
     // updateLRU
     // else,
     // report snoop results to bus
+
+    Derived values = addressParser(address);
+    int way = findHit(values);
+    int snoopResult;
+
+    if (way != -1) {
+        if (cache[values.index].lines[way].MESI != 'M') {
+            cache[values.index].lines[way].MESI = 'S';
+        }
+
+        updateLRU(values.index, way);
+    } else {
+        busOperation(READ, address, &snoopResult);
+    }
 }
 
 void snoopWrite(unsigned int address) {
@@ -280,6 +305,17 @@ void snoopWrite(unsigned int address) {
     // updateLRU
     // else,
     // report snoop results to bus
+
+    Derived values = addressParser(address);
+    int way = findHit(values);
+    int snoopResult;
+
+    if (way != -1) {
+        cache[values.index].lines[way].MESI = 'M';
+        updateLRU(values.index, way);
+    } else {
+        busOperation(READ, address, &snoopResult);
+    }
 }   
 
 void snoopReadM(unsigned int address) {
@@ -293,6 +329,22 @@ void snoopReadM(unsigned int address) {
     // updateLRU
     // else
     // report snoop results to bus
+
+    Derived values = addressParser(address);
+    int way = findHit(values);
+    int snoopResult;
+
+    if (way != -1) {
+        if (cache[values.index].lines[way].MESI == 'M') {
+            busOperation(WRITE, address, snoopResult);
+        }
+
+        cache[values.index].lines[way].MESI = 'I';
+
+        updateLRU(values.index, way);
+    } else {
+        busOperation(READ, address, &snoopResult);
+    }
 }
 
 void updateLRU(unsigned int setIndex, int way) {
