@@ -25,22 +25,20 @@ enum BusOp {
     RWIM
 };
 
-
-/* Snoop Result types */
+/* Snoop Result types/Testing only  
 enum SnoopOp {
     NOHIT,
     HIT,
     HITM
 };
+*/
 
-/*
-/* Snoop ops for actual presentation  
-enum SnoopOpOffical {
+/* Snoop Result types */
+enum SnoopOp {
     HIT,
     HITM,
     NOHIT
 };
-*/
 
 /* L2 to L1 message types */
 enum MessageType {
@@ -73,10 +71,18 @@ const char *busChar[4] = {
     "RWIM"
 };
 
+/* For testing only
 const char *snoopChar[3] = {
     "NOHIT",
     "HIT",
     "HITM"
+};
+*/
+
+const char* snoopChar[3] = {
+    "HIT",
+    "HITM",
+    "NOHIT"
 };
 
 const char *messageChar[4] = {
