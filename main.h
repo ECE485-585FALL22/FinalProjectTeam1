@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+
 /*----------------------------------
               Defines           
 ----------------------------------*/
@@ -26,12 +27,22 @@ enum BusOp {
     RWIM
 };
 
+
 /* Snoop Result types */
 enum SnoopOp {
     NOHIT,
     HIT,
     HITM
 };
+
+/*
+/* Snoop ops for actual presentation  
+enum SnoopOpOffical {
+    HIT,
+    HITM,
+    NOHIT
+};
+*/
 
 /* L2 to L1 message types */
 enum MessageType {
@@ -127,12 +138,10 @@ int getLRU(unsigned int setIndex);
 int findEmpty(unsigned int setIndex);
 int findHit(Derived values);
 
-
 void snoopInvaild(unsigned int address);
 void snoopRead(unsigned int address);
 void snoopWrite(unsigned int address);
 void snoopReadM(unsigned int address);
-
 
 void printOutput();
 void printValid(unsigned int address);
@@ -147,3 +156,4 @@ int getSnoopResult(unsigned int Address);
 
 void read(unsigned int address);
 void write(unsigned int address);
+
