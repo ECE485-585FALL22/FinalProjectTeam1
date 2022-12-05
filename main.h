@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
 /*----------------------------------
               Defines           
 ----------------------------------*/
@@ -14,7 +13,6 @@
 #define INDEXOFF    15
 #define NUMWAYS     8
 #define NUMSETS     32768
-
 
 /*----------------------------------
                Enums            
@@ -131,29 +129,38 @@ Set cache[NUMSETS];
 /*----------------------------------
          Fucntion prototypes             
 ----------------------------------*/
+// Parse functions
 TraceValues traceParser(char *filename);
 Derived addressParser(unsigned int address);
+
+// LRU functions
 void updateLRU(unsigned int setIndex, int way);
 int getLRU(unsigned int setIndex);
+
+// Set checking functions
 int findEmpty(unsigned int setIndex);
 int findHit(Derived values);
 
+// Snooping functions
 void snoopInvaild(unsigned int address);
 void snoopRead(unsigned int address);
 void snoopWrite(unsigned int address);
 void snoopReadM(unsigned int address);
 
-void printOutput();
-void printValid(unsigned int address);
-void resetCache();
+// Read/Write functions
+void read(unsigned int address);
+void write(unsigned int address);
 
+// Helper functions
+void resetCache();
 void writeMESI(unsigned int setIndex, int way, int *snoopResult);
 
+// Printing functions
 void busOperation(int BusOp, unsigned int Address, int *SnoopResult);
 void putSnoopResult(unsigned int Address, int SnoopResult);
 void messageToCache(int Message, unsigned int Address);
 int getSnoopResult(unsigned int Address);
+void printOutput();
+void printValid(unsigned int address);
 
-void read(unsigned int address);
-void write(unsigned int address);
 
