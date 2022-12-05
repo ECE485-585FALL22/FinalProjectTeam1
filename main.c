@@ -19,14 +19,14 @@ int main(int argc, char *argv[]) {
         if((*argv)[0] == '-') {
             switch((*argv)[1]) {
                 case 's':
-                    printf("Silent Mode Enabled...\n");
+                    printf("\nSILENT MODE ENABLED\n");
                     silentMode = true;
                     break;
                 case 'n':
-                    printf("Nornal Mode Enabled...\n");
+                    printf("\nNORMAL MODE ENABLED\n");
                     break;
                 default:
-                    printf("Unknonw option -%c\n", (*argv)[1]);
+                    printf("UNKNOWN OPTION -%c\n", (*argv)[1]);
                     exit(-1);
             }
         }
@@ -406,7 +406,8 @@ void updateLRU(unsigned int setIndex, int way) {
 int getLRU(unsigned int setIndex) {
     int way;
     unsigned int PLRU = cache[setIndex].PLRU;
-
+    
+    // Check bit and decide where to check next bit
     if( (PLRU & 0x1) == 0 ) {
         if( ((PLRU >> 2) & 0x1) == 0 ) {
             if( ((PLRU >> 3) & 0x1) == 0 ) {
